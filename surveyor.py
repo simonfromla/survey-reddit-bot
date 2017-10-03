@@ -4,6 +4,13 @@ import time
 
 AUTO_REPLY_MESSAGE = ("A reply to your 'test'.")
 
+"""Takes an input of subs from the user, title, and post-body and auto generates
+posts at 8 minute intervals. Input information taken from config.py.
+[description]
+
+check for a positive number of responses and scrape the site for comments.
+Save comment ID
+"""
 
 def login():
     print("Authenticating")
