@@ -3,8 +3,6 @@ import os
 import praw
 import time
 
-# AUTO_REPLY_MESSAGE = ("A reply to your 'test'.")
-
 """Takes an input of subs from the user, title, and post-body and auto generates
 posts at 8 minute intervals. Input information taken from config.py.
 [description]
@@ -19,11 +17,6 @@ def login():
     print("Authenticated as {}".format(reddit.user.me()))
     return reddit
 
-# read post-body.txt into the variable 'desc'
-# read the title for the post
-# def read_post():
-#     with open("~/post-body.txt", "r"):
-
 
 def submit_post(reddit, title, body_file):
     print("reading body_file..")
@@ -35,13 +28,14 @@ def submit_post(reddit, title, body_file):
         print("submitting post...")
         subreddit.submit(title, selftext=body, send_replies=True)
         print("post submitted")
+        # sleep for ten minutes
+        # scrape for comments
 
 
 def scrape_response():
     pass
 
 def run(reddit):
-    # print("filler")
     body_location = os.path.join(os.path.abspath(os.path.dirname(__file__)), "post-body.txt")
     submit_post(reddit, config.TITLE, body_location)
 
@@ -60,8 +54,7 @@ def run(reddit):
 
 def main():
     reddit = login()
-    # while True:
-    #     run(reddit)
+
     run(reddit)
 
 if __name__ == "__main__":
