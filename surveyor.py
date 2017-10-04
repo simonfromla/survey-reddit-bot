@@ -22,6 +22,8 @@ def submit_post(reddit, title, body_file):
     print("reading body_file..")
     with open(body_file, "r") as f:
         body = f.read()
+        body = body.replace("{%SUBREDDIT%}", s)
+        # body = body.replace("{%TOPIC%}", topic)
     sr = config.SUBS
     for s in sr:
         subreddit = reddit.subreddit(s)

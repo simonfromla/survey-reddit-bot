@@ -1,5 +1,5 @@
-Hello /r/{%subreddit%}!
+Hello /r/{%SUBREDDIT%}!
 
 I'm doing a bit of research into ...
 
-I'm hoping members of this sub would be able to share a few thoughts on {%topic%}.
+I'm hoping members of this sub would be able to share a few thoughts on {%TOPIC%}.
