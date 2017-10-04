@@ -1,8 +1,9 @@
 import config
+import os
 import praw
 import time
 
-AUTO_REPLY_MESSAGE = ("A reply to your 'test'.")
+# AUTO_REPLY_MESSAGE = ("A reply to your 'test'.")
 
 """Takes an input of subs from the user, title, and post-body and auto generates
 posts at 8 minute intervals. Input information taken from config.py.
@@ -18,24 +19,50 @@ def login():
     print("Authenticated as {}".format(reddit.user.me()))
     return reddit
 
+# read post-body.txt into the variable 'desc'
+# read the title for the post
+# def read_post():
+#     with open("~/post-body.txt", "r"):
+
+
+def submit_post(reddit, title, body_file):
+    print("reading body_file..")
+    with open(body_file, "r") as f:
+        body = f.read()
+    sr = config.SUBS
+    for s in sr:
+        subreddit = reddit.subreddit(s)
+        print("submitting post...")
+        subreddit.submit(title, selftext=body, send_replies=True)
+        print("post submitted")
+
+
+def scrape_response():
+    pass
 
 def run(reddit):
-    print("Obtaining {} comments".format(config.number_of_comments))
-    for comment in reddit.subreddit('test').comments(limit=config.number_of_comments):
-        if "test" in comment.body:
-            print("'Test' found in comment: {}".format(comment.id))
-            comment.reply(AUTO_REPLY_MESSAGE)
-            print("Replied to comment: {}".format(comment.id))
+    # print("filler")
+    body_location = os.path.join(os.path.abspath(os.path.dirname(__file__)), "post-body.txt")
+    submit_post(reddit, config.TITLE, body_location)
 
-            print("Sleeping for 10 seconds")
-            time.sleep(10)
+
+
+    # print("Obtaining {} comments".format(config.number_of_comments))
+    # for comment in reddit.subreddit('test').comments(limit=config.number_of_comments):
+    #     if "test" in comment.body:
+    #         print("'Test' found in comment: {}".format(comment.id))
+    #         comment.reply(AUTO_REPLY_MESSAGE)
+    #         print("Replied to comment: {}".format(comment.id))
+
+    #         print("Sleeping for 10 seconds")
+    #         time.sleep(10)
 
 
 def main():
     reddit = login()
-    while True:
-        run(reddit)
-
+    # while True:
+    #     run(reddit)
+    run(reddit)
 
 if __name__ == "__main__":
     main()
