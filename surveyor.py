@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 import config
-import csv
+import json
 import os
 import praw
 import time
@@ -34,7 +34,7 @@ def submit_post(reddit, title, body_file):
     with open(body_file, "r") as f:
         body = f.read()
     sr = config.SUBS
-    # shortlinks = []
+    data = {}
     for index, s in enumerate(sr, 1 - len(sr)):
         body = body.replace("%%SUBREDDIT%%", s)
         # body = body.replace("%%TOPIC%%", topic
@@ -42,11 +42,10 @@ def submit_post(reddit, title, body_file):
         print("submitting a new post to /r/{}".format(s))
         url = subreddit.submit(title, selftext=body, send_replies=True)
         print("post submitted to /r/{}".format(s))
-        # shortlinks.append(url.shortlink)
-        with open("shortlinks.csv", "a+", encoding="utf-8") as csvfile:
-            writer = csv.writer(csvfile, delimiter=' ', )
-            writer.writerow([url.shortlink])
-            print("Shortlink written to CSV")
+        data[s] = [{"shortlink": url.shortlink}, {"responses": []}]
+        with open("data.json", "w") as file:
+            json.dump(data, file, ensure_ascii=False)
+            print("Data written to file")
         if index:
             print("sleeping 10 minutes...")
             time.sleep(600)
