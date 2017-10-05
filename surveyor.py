@@ -13,13 +13,6 @@ Take url shortlink and save it and subreddit to CSV.
 (also write to CSV: the survey question)
 
 
-2) open the CSV and read each url shortlink.
-request the shortlink page
-if response, scrape comment text, comment id, author
-write to csv according to the url shortlink/subreddit
-CHECKING for updates.
-if new comment, add it. if same comment id but edited answer, add edit to csv.
-
 """
 
 def login():
@@ -50,14 +43,8 @@ def submit_post(reddit, title, body_file):
             print("sleeping 10 minutes...")
             time.sleep(600)
 
-        # write to CSV AS it happens. Soon as a shortlink is returned. why wait for it all to finish? Might want to look into the post asap. (move the `with open` v into the for statement above)
-        # Scraper.py should be able to work in isolation, with a dynamic csv--meaning, as the csv updates with new shortlinks, scraper should work without conflict.
 
-    # with open("shortlinks.csv", "a+", encoding="utf-8") as csvfile:
-    #     writer = csv.writer(csvfile, delimiter=' ', )
-    #     for link in shortlinks:
-    #         writer.writerow([link])
-    #     print("Finished writing shortlinks")
+        # Scraper.py should be able to work in isolation, with a dynamic csv--meaning, as the csv updates with new shortlinks, scraper should work without conflict.
 
 
 def run(reddit):
