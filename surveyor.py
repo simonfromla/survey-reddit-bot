@@ -42,7 +42,7 @@ def submit_post(reddit, title, body_file):
         print("submitting a new post to /r/{}".format(s))
         url = subreddit.submit(title, selftext=body, send_replies=True)
         print("post submitted to /r/{}".format(s))
-        data[s] = [{"shortlink": url.shortlink}, {"responses": []}]
+        data["/r/" + s] = [{"shortlink": url.shortlink}, {"responses": []}]
         with open("data.json", "w") as file:
             json.dump(data, file, ensure_ascii=False)
             print("Data written to file")
