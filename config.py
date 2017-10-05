@@ -2,5 +2,5 @@
 # number_of_comments = 10
 
 # subreddits = ["Italy", "France", "China", "Vietnam"]
-TITLE = "A test tit"
-SUBS = ["test"]
+TITLE = "A test title"
+SUBS = ["test", "postpreview", "testingground4bots"]

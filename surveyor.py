@@ -1,19 +1,30 @@
+#! /usr/bin/python3
 import config
+import csv
 import os
 import praw
 import time
 
-"""Takes an input of subs from the user, title, and post-body and auto generates
-posts at 8 minute intervals. Input information taken from config.py.
-[description]
+"""
 
-check for a positive number of responses and scrape the site for comments.
-Save comment ID
+1) Takes an input of subs from the user, title, and post-body and auto generates
+posts at 10 minute intervals. Input information taken from config.py.
+Take url shortlink and save it and subreddit to CSV.
+(also write to CSV: the survey question)
+
+
+2) open the CSV and read each url shortlink.
+request the shortlink page
+if response, scrape comment text, comment id, author
+write to csv according to the url shortlink/subreddit
+CHECKING for updates.
+if new comment, add it. if same comment id but edited answer, add edit to csv.
+
 """
 
 def login():
     print("Authenticating")
-    reddit = praw.Reddit("surveyor", user_agent="asdf")
+    reddit = praw.Reddit("surveyor", user_agent="Chrome:com.example.surveyor-bot:v1 (by /u/man-scout)")
     print("Authenticated as {}".format(reddit.user.me()))
     return reddit
 
@@ -23,19 +34,32 @@ def submit_post(reddit, title, body_file):
     with open(body_file, "r") as f:
         body = f.read()
     sr = config.SUBS
-    for s in sr:
+    # shortlinks = []
+    for index, s in enumerate(sr, 1 - len(sr)):
         body = body.replace("%%SUBREDDIT%%", s)
         # body = body.replace("%%TOPIC%%", topic
         subreddit = reddit.subreddit(s)
-        print("submitting post...")
-        subreddit.submit(title, selftext=body, send_replies=True)
-        print("post submitted")
-        # sleep for ten minutes
-        # scrape for comments
+        print("submitting a new post to /r/{}".format(s))
+        url = subreddit.submit(title, selftext=body, send_replies=True)
+        print("post submitted to /r/{}".format(s))
+        # shortlinks.append(url.shortlink)
+        with open("shortlinks.csv", "a+", encoding="utf-8") as csvfile:
+            writer = csv.writer(csvfile, delimiter=' ', )
+            writer.writerow([url.shortlink])
+            print("Shortlink written to CSV")
+        if index:
+            print("sleeping 10 minutes...")
+            time.sleep(600)
 
+        # write to CSV AS it happens. Soon as a shortlink is returned. why wait for it all to finish? Might want to look into the post asap. (move the `with open` v into the for statement above)
+        # Scraper.py should be able to work in isolation, with a dynamic csv--meaning, as the csv updates with new shortlinks, scraper should work without conflict.
 
-def scrape_response():
-    pass
+    # with open("shortlinks.csv", "a+", encoding="utf-8") as csvfile:
+    #     writer = csv.writer(csvfile, delimiter=' ', )
+    #     for link in shortlinks:
+    #         writer.writerow([link])
+    #     print("Finished writing shortlinks")
+
 
 def run(reddit):
     body_location = os.path.join(os.path.abspath(os.path.dirname(__file__)), "post-body.txt")
