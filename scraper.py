@@ -39,11 +39,25 @@ def scrape(reddit):
         submission = reddit.submission(id=sl_id)
         submission.comments.replace_more(limit=0)
 
-        cmtd = [{comment.id: comment.body} for comment in submission.comments.list()]
+        cmt_data = [{comment.id: comment.body} for comment in submission.comments.list()]
         # print(cmtd)
-        for r in data:
-            if sl_id in data[r][0]["shortlink"]:
-                data[r][0]["responses"] = cmtd
+        # for r in data:
+        #     if sl_id in data[r][0]["shortlink"]:
+        #         data[r][0]["responses"] = cmtd
+        for i in data:
+            if sl_id in data[i][0]["shortlink"]:
+                data[i][1]["responses"] = cmt_data
+
+        # for key, value in data.items():
+        #     for x in value:
+        #         if sl_id in x['shortlink']:
+        #             if not "responses":
+        #                 x["responses"]= cmt_data
+        #             else:
+        #         # in case you overwrite the response with empty data
+        #                 x['responses'] += cmt_data
+
+
     # print(data[r][0]["responses"] for r in data)
     print(data)
     # print(data)
