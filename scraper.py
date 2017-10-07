@@ -7,16 +7,18 @@ import praw
 if new comment, add it. if same comment id but edited answer, add edit to csv.
 """
 
+
 def login():
     print("Authenticating")
-    reddit = praw.Reddit("surveyor", user_agent="Chrome:com.example.surveyor-bot:v1 (by /u/man-scout)")
+    reddit = praw.Reddit("surveyor", user_agent="Chrome:com.example.surveyor-"
+                                                "bot:v1 (by /u/man-scout)")
     print("Authenticated as {}".format(reddit.user.me()))
     return reddit
 
 
-def deserialize():
-    with open("data.json", "r") as f:
-        data = json.load(f)
+def load_manager():
+    with open("data.json", "r") as file:
+        data = json.load(file)
         print(data["postpreview"][0]["shortlink"])
 
 

@@ -45,13 +45,27 @@ def submit_post(reddit, fp=None):
         submission = subreddit.submit(title, selftext=body, send_replies=True)
         print("post submitted to /r/{}".format(s))
 
+        # data["/r/" + s] = [{"shortlink": submission.shortlink},
+        #                    {"responses": []}]
+
+
+        if fp is None:
+            fp = JSON_DEFAULT_LOC
+        with open(fp, "r") as file:
+            data = json.load(file)
         data["/r/" + s] = [{"shortlink": submission.shortlink},
                            {"responses": []}]
-        try:
-            write_to_file(data)
+        with open(fp, "w") as file:
+            json.dump(data, file, ensure_ascii=False)
             print("Data written to file")
-        except Exception as e:
-            print("Could not write to file: {}".format(e))
+
+
+
+        # try:
+        #     write_to_file(data)
+        #     print("Data written to file")
+        # except Exception as e:
+        #     print("Could not write to file: {}".format(e))
         if index:
             print("Sleeping 10 minutes before posting...")
             time.sleep(600)
@@ -60,6 +74,9 @@ def submit_post(reddit, fp=None):
 def write_to_file(data, fp=None):
     if fp is None:
         fp = JSON_DEFAULT_LOC
+
+    with open(fp, "r") as file:
+        json.load(data)
     with open(fp, "w") as file:
         json.dump(data, file, ensure_ascii=False)
 
