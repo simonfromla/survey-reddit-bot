@@ -31,54 +31,39 @@ def load_post_body():
 
 
 def submit_post(reddit, fp=None):
-    title = config.TITLE
-    sr = config.SUBS
+    post_title = config.TITLE
+    sub_list = config.SUBS
     print("Reading body file...")
     body = load_post_body()
 
-    data = {}
-    for index, s in enumerate(sr, 1 - len(sr)):
-        body = body.replace("%%SUBREDDIT%%", s)
+    for index, sub in enumerate(sub_list, 1 - len(sub_list)):
+        body = body.replace("%%SUBREDDIT%%", sub)
         # body = body.replace("%%TOPIC%%", topic)
-        subreddit = reddit.subreddit(s)
-        print("submitting a new post to /r/{}".format(s))
-        submission = subreddit.submit(title, selftext=body, send_replies=True)
-        print("post submitted to /r/{}".format(s))
+        subreddit = reddit.subreddit(sub)
+        print("Submitting a new post to /r/{}".format(sub))
+        submission = subreddit.submit(post_title,
+                                      selftext=body, send_replies=True)
+        print("Post submitted to /r/{}".format(sub))
+        try:
+            write_to_file(submission, sub)
+        except Exception as e:
+            print("Could not write to file: {}".format(e))
 
-        # data["/r/" + s] = [{"shortlink": submission.shortlink},
-        #                    {"responses": []}]
-
-
-        if fp is None:
-            fp = JSON_DEFAULT_LOC
-        with open(fp, "r") as file:
-            data = json.load(file)
-        data["/r/" + s] = [{"shortlink": submission.shortlink},
-                           {"responses": []}]
-        with open(fp, "w") as file:
-            json.dump(data, file, ensure_ascii=False)
-            print("Data written to file")
-
-
-
-        # try:
-        #     write_to_file(data)
-        #     print("Data written to file")
-        # except Exception as e:
-        #     print("Could not write to file: {}".format(e))
         if index:
             print("Sleeping 10 minutes before posting...")
             time.sleep(600)
 
 
-def write_to_file(data, fp=None):
+def write_to_file(submission, sub, fp=None):
     if fp is None:
         fp = JSON_DEFAULT_LOC
-
     with open(fp, "r") as file:
-        json.load(data)
+        data = json.load(file)
+    data["/r/" + sub] = [{"shortlink": submission.shortlink},
+                         {"responses": []}]
     with open(fp, "w") as file:
         json.dump(data, file, ensure_ascii=False)
+        print("Data written to file")
 
 
 def main():
