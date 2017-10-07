@@ -6,63 +6,68 @@ import praw
 import time
 
 """
+Auto-generate posts to a given list of sub-reddits at ten minute intervals.
 
-1) Takes an input of subs from the user, title, and post-body and auto generates
-posts at 10 minute intervals. Input information taken from config.py.
-
-
+Configure the post's title, and choose the subreddits in 'config.py', and edit
+the post's body information with markdown inside 'post-body.txt'.
 """
+
+JSON_DEFAULT_LOC = os.environ.get('JSON_LOCATION') or os.path.join(
+    os.path.abspath(os.path.dirname(__file__)), "data.json")
+
 
 def login():
     print("Authenticating")
-    reddit = praw.Reddit("surveyor", user_agent="Chrome:com.example.surveyor-bot:v1 (by /u/man-scout)")
+    reddit = praw.Reddit("surveyor", user_agent="Chrome:com.example.surveyor-"
+                                                "bot:v1 (by /u/man-scout)")
     print("Authenticated as {}".format(reddit.user.me()))
     return reddit
 
 
-def submit_post(reddit, title, body_file):
-    print("reading body_file..")
-    with open(body_file, "r") as f:
-        body = f.read()
+def load_post_body():
+    with open("post-body.txt") as file:
+        body = file.read()
+    return body
+
+
+def submit_post(reddit, fp=None):
+    title = config.TITLE
     sr = config.SUBS
+    print("Reading body file...")
+    body = load_post_body()
+
     data = {}
     for index, s in enumerate(sr, 1 - len(sr)):
         body = body.replace("%%SUBREDDIT%%", s)
-        # body = body.replace("%%TOPIC%%", topic
+        # body = body.replace("%%TOPIC%%", topic)
         subreddit = reddit.subreddit(s)
         print("submitting a new post to /r/{}".format(s))
-        url = subreddit.submit(title, selftext=body, send_replies=True)
+        submission = subreddit.submit(title, selftext=body, send_replies=True)
         print("post submitted to /r/{}".format(s))
-        data["/r/" + s] = [{"shortlink": url.shortlink}, {"responses": []}]
-        with open("data.json", "w") as file:
-            json.dump(data, file, ensure_ascii=False)
+
+        data["/r/" + s] = [{"shortlink": submission.shortlink},
+                           {"responses": []}]
+        try:
+            write_to_file(data)
             print("Data written to file")
+        except Exception as e:
+            print("Could not write to file: {}".format(e))
         if index:
-            print("sleeping 10 minutes...")
+            print("Sleeping 10 minutes before posting...")
             time.sleep(600)
 
 
-def run(reddit):
-    body_location = os.path.join(os.path.abspath(os.path.dirname(__file__)), "post-body.txt")
-    submit_post(reddit, config.TITLE, body_location)
-
-
-
-    # print("Obtaining {} comments".format(config.number_of_comments))
-    # for comment in reddit.subreddit('test').comments(limit=config.number_of_comments):
-    #     if "test" in comment.body:
-    #         print("'Test' found in comment: {}".format(comment.id))
-    #         comment.reply(AUTO_REPLY_MESSAGE)
-    #         print("Replied to comment: {}".format(comment.id))
-
-    #         print("Sleeping for 10 seconds")
-    #         time.sleep(10)
+def write_to_file(data, fp=None):
+    if fp is None:
+        fp = JSON_DEFAULT_LOC
+    with open(fp, "w") as file:
+        json.dump(data, file, ensure_ascii=False)
 
 
 def main():
     reddit = login()
+    submit_post(reddit)
 
-    run(reddit)
 
 if __name__ == "__main__":
     main()
