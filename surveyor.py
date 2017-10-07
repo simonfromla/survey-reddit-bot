@@ -9,8 +9,6 @@ import time
 
 1) Takes an input of subs from the user, title, and post-body and auto generates
 posts at 10 minute intervals. Input information taken from config.py.
-Take url shortlink and save it and subreddit to CSV.
-(also write to CSV: the survey question)
 
 
 """
@@ -42,9 +40,6 @@ def submit_post(reddit, title, body_file):
         if index:
             print("sleeping 10 minutes...")
             time.sleep(600)
-
-
-        # Scraper.py should be able to work in isolation, with a dynamic csv--meaning, as the csv updates with new shortlinks, scraper should work without conflict.
 
 
 def run(reddit):
