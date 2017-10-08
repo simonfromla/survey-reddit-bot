@@ -45,7 +45,7 @@ def scrape(reddit):
         submission = reddit.submission(id=sl_id)
         try:
             write_comments_to_file(submission, sl_id, data)
-            print("Comments from '{}'' "
+            print("Comments from '{}' "
                   "saved to file".format(submission.subreddit))
         except Exception as e:
             print("Could not write to file: {}".format(e))

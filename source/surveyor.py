@@ -1,9 +1,11 @@
 #!/usr/bin/python3
-import config
 import json
 import os
 import praw
+import sys
 import time
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from configs import config
 
 """
 Auto-generate posts to a given list of sub-reddits at ten minute intervals.
@@ -32,7 +34,7 @@ def load_post_body():
     """ Load the accompanying post-body.txt to be used as the post's body text.
     Return the markdown formatted text.
     """
-    with open("post-body.txt") as file:
+    with open("../configs/post-body.txt") as file:
         body = file.read()
     return body
 
