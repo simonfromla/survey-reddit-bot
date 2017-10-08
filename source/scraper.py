@@ -18,8 +18,8 @@ def login():
     Return reddit instance.
     """
     print("Authenticating")
-    reddit = praw.Reddit("surveyor", user_agent="Chrome:com.example.surveyor-"
-                                                "bot:v1 (by /u/man-scout)")
+    reddit = praw.Reddit("appname", user_agent="Chrome:com.example.bot-"
+                                                "name:v1 (by /u/)")
     print("Authenticated as {}".format(reddit.user.me()))
     return reddit
 
