@@ -13,6 +13,10 @@ JSON_DEFAULT_LOC = os.environ.get('JSON_LOCATION') or os.path.join(
 
 
 def login():
+    """ Create a reddit instance according to praw.ini configuration.
+    Call reddit.user.me() as a check.
+    Return reddit instance.
+    """
     print("Authenticating")
     reddit = praw.Reddit("surveyor", user_agent="Chrome:com.example.surveyor-"
                                                 "bot:v1 (by /u/man-scout)")
@@ -21,6 +25,8 @@ def login():
 
 
 def load_manager(fp=None):
+    """ Load the accompanying JSON data which holds reddit post information.
+    """
     if fp is None:
         fp = JSON_DEFAULT_LOC
     with open(fp, "r") as file:
@@ -29,6 +35,9 @@ def load_manager(fp=None):
 
 
 def scrape(reddit):
+    """ For each post specified in the JSON dict, scrape the comments within
+    the post and write the comments to the JSON dict to the key: "responses".
+    """
     data = load_manager()
     shortlinks = [data[sub][0]["shortlink"][-6:] for sub in data]
 
@@ -36,12 +45,17 @@ def scrape(reddit):
         submission = reddit.submission(id=sl_id)
         try:
             write_comments_to_file(submission, sl_id, data)
-            print("Comments from '{}'' saved to file".format(submission.subreddit))
+            print("Comments from '{}'' "
+                  "saved to file".format(submission.subreddit))
         except Exception as e:
             print("Could not write to file: {}".format(e))
 
 
 def write_comments_to_file(submission, sl_id, data, fp=None):
+    """ Takes a reddit submission object, shortlink ID, and JSON data.
+    Retrieves the comments per submission, and for each submission within the
+    JSON data, also write its comments.
+    """
     submission.comments.replace_more(limit=0)
     cmt_data = [{comment.id: comment.body}
                 for comment in submission.comments.list()]
