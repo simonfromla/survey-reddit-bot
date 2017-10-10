@@ -83,7 +83,7 @@ def write_to_file(update, fp=None):
         fp = JSON_DEFAULT_LOC
     with open(fp, "w") as file:
         json.dump(update, file, ensure_ascii=False)
-        print("Data written to file")
+        print("Post submission data written to file")
 
 
 def submit_post(reddit, fp=None):
