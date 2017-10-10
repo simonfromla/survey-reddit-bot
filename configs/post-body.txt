@@ -1,8 +1,8 @@
-Hello /r/%%SUBREDDIT%%!
+__Hello /r/%%SUBREDDIT%%!__
 
-# I'm doing a bit of research into ...
+#### I'm doing a bit of research into ...
 
-I'm __hoping members__ of *this sub* would be able to share a few thoughts on %%TOPIC%%.
+I'm hoping members of *this sub* would be able to share a few thoughts on...
 
 
 

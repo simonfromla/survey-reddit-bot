@@ -20,7 +20,7 @@ def login():
     Return reddit instance.
     """
     print("Authenticating")
-    reddit = praw.Reddit("surveyor", user_agent="Chrome:com.example.bot-"
+    reddit = praw.Reddit("appname", user_agent="Chrome:com.example.bot-"
                                                 "name:v1 (by /u/)")
     print("Authenticated as {}".format(reddit.user.me()))
     return reddit
@@ -54,12 +54,12 @@ def extract_submission_comment(submission_replaced):
     return submission_comment
 
 
-def update_response(old_responses, comment_to_add, sl_id):
-    new_responses = deepcopy(old_responses)
-    for i in new_responses:
-        if sl_id in new_responses[i][0]["shortlink"]:
-            new_responses[i][1]["responses"] = comment_to_add
-    return new_responses
+def update_response(old_response, comment_to_add, sl_id):
+    new_response = deepcopy(old_response)
+    for i in new_response:
+        if sl_id in new_response[i][0]["shortlink"]:
+            new_response[i][1]["responses"] = comment_to_add
+    return new_response
 
 
 def prepare_survey_update(submission, sl_id, survey_responses):
@@ -74,6 +74,8 @@ def prepare_survey_update(submission, sl_id, survey_responses):
 
 
 def extract_shortlink_id(survey_responses):
+    """ [-6:] grabs the last six shortlink URL ID characters.
+    """
     return [survey_responses[sub][0]["shortlink"][-6:]
             for sub in survey_responses]
 
