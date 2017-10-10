@@ -36,40 +36,11 @@ def load_survey_responses(fp=None):
     return survey_results
 
 
-def scrape_submissions(reddit):
-    """ For each post specified in survey_responses.json, scrape the comments
-    within the post and write the new or updated responses to the JSON dict.
-    """
-    survey_responses = load_survey_responses()
-    shortlink_id_list = extract_shortlink_id(survey_responses)
-
-    for sl_id in shortlink_id_list:
-        submission = reddit.submission(id=sl_id)
-        try:
-            updated_responses = prepare_survey_update(submission,
-                                                      sl_id,
-                                                      survey_responses)
-            write_comments_to_file(updated_responses)
-            print("Comments from '{}' "
-                  "saved to file".format(submission.subreddit))
-        except OSError as e:
-            print("Could not write to file: {}".format(e))
-
-
-def extract_shortlink_id(survey_responses):
-    return [survey_responses[sub][0]["shortlink"][-6:]
-            for sub in survey_responses]
-
-
-def prepare_survey_update(submission, sl_id, survey_responses):
-    """ Combs through a submission's comments and replaces the "more comments",
-    extracts the comments from the submission, and prepares file to be written
-    with an updated JSON dictionary.
-    """
-    submission_replaced = replace_more_comments(submission)
-    submission_comment = extract_submission_comment(submission_replaced)
-    updated = update_response(survey_responses, submission_comment, sl_id)
-    return updated
+def write_comments_to_file(updated_json, fp=None):
+    if fp is None:
+        fp = JSON_DEFAULT_LOC
+    with open(fp, "w") as fp:
+        json.dump(updated_json, fp)
 
 
 def replace_more_comments(submission):
@@ -91,11 +62,40 @@ def update_response(old_responses, comment_to_add, sl_id):
     return new_responses
 
 
-def write_comments_to_file(updated_json, fp=None):
-    if fp is None:
-        fp = JSON_DEFAULT_LOC
-    with open(fp, "w") as fp:
-        json.dump(updated_json, fp)
+def prepare_survey_update(submission, sl_id, survey_responses):
+    """ Combs through a submission's comments and replaces the "more comments",
+    extracts the comments from the submission, and prepares file to be written
+    with an updated JSON dictionary.
+    """
+    submission_replaced = replace_more_comments(submission)
+    submission_comment = extract_submission_comment(submission_replaced)
+    updated = update_response(survey_responses, submission_comment, sl_id)
+    return updated
+
+
+def extract_shortlink_id(survey_responses):
+    return [survey_responses[sub][0]["shortlink"][-6:]
+            for sub in survey_responses]
+
+
+def scrape_submissions(reddit):
+    """ For each post specified in survey_responses.json, scrape the comments
+    within the post and write the new or updated responses to the JSON dict.
+    """
+    survey_responses = load_survey_responses()
+    shortlink_id_list = extract_shortlink_id(survey_responses)
+
+    for sl_id in shortlink_id_list:
+        submission = reddit.submission(id=sl_id)
+        try:
+            updated_responses = prepare_survey_update(submission,
+                                                      sl_id,
+                                                      survey_responses)
+            write_comments_to_file(updated_responses)
+            print("Comments from '{}' "
+                  "saved to file".format(submission.subreddit))
+        except OSError as e:
+            print("Could not write to file: {}".format(e))
 
 
 def main():
